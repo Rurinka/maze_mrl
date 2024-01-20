@@ -9,6 +9,8 @@ wall = "██"
 space = "  "
 goal = "▓▓"
 
+vec_sum = lambda v1, v2: [num+v2[idx] for idx, num in enumerate(v1)]
+gather  = lambda v, indices: [v[i] for i in indices]
 def main(stdscr):
     # Clear screen
     stdscr.clear()
@@ -57,31 +59,25 @@ def genarate_maze():
         }
 
         if pacman[0] <= 1:
-            # or maze[min(1, pacman[0]-2)][pacman[1]] == '  '\
-            # or maze[min(1, pacman[0]-1)][pacman[1]-1] == '  '\
-            # or maze[min(1, pacman[0]-1)][pacman[1]+1] == '  ':
             moves.pop("left")
         if pacman[0] >= size-2:
-            # or maze[max(size-2, pacman[0])][pacman[1]] == '  '\
-            # or maze[max(size-2, pacman[0]+1)][pacman[1]-1] == '  '\
-            # or maze[max(size-2, pacman[0]+1)][pacman[1]+1] == '  ':
             moves.pop("right")
         if pacman[1] <= 1:
-            # or maze[pacman[0]][min(1, pacman[1]-2)] == '  '\
-            # or maze[pacman[0]-1][min(1, pacman[1]-1)] == '  '\
-            # or maze[pacman[0]+1][min(1, pacman[1]-1)] == '  ':
             moves.pop("up")
         if pacman[1] >= size-2:
-            # or maze[pacman[0]][max(size-2, pacman[1])] == '  '\
-            # or maze[pacman[0]+1][min(1, pacman[1]+1)] == '  '\
-            # or maze[pacman[0]+1][min(1, pacman[1]+1)] == '  ':
             moves.pop("down")
+
+        for k, m in moves.copy().items():
+            if maze[pacman[0]+m[0]*2][pacman[1]+m[1]*2] == 0:
+                moves.pop(k)
 
         if moves:
             path.append(pacman) 
             move = random.choice(list(moves.values()))
-            pacman = [coor+move[idx] for idx, coor in enumerate(pacman)]
+            pacman = [coor+move[idx]*2 for idx, coor in enumerate(pacman)]
+            mid = [coor+move[idx] for idx, coor in enumerate(pacman)]
             maze[pacman[0]][pacman[1]] = 2
+            maze[mid[0]][mid[1]] = 0
         else:
             pacman = path.pop()
 
